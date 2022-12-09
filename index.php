@@ -13,11 +13,7 @@
 <?php include "_header.php"; ?>
 
 <?php
-try {
-    $user="root";
-    $pass="";
-    $dbh = new PDO('mysql:host=localhost;dbname=pu012', $user, $pass);
-    $sql = "SELECT * FROM tbl_products";
+    include_once "connection_database.php";
 ?>
 
 
@@ -27,6 +23,7 @@ try {
         <div class="container py-5">
             <div class="row">
                 <?php
+                $sql = "SELECT * FROM tbl_products";
                 foreach($dbh->query($sql) as $row) {
                     $id = $row['id'];
                     $image = $row['image'];
@@ -52,7 +49,7 @@ try {
                     </div>
                 </div>
                     ';
-                }
+
                 ?>
 
 
@@ -60,14 +57,6 @@ try {
         </div>
     </section>
 </div>
-
-    <?php
-    $dbh = null;
-} catch (PDOException $e) {
-    print "Error!: " . $e->getMessage() . "<br/>";
-    die();
-}
-?>
 
 <script src="js/bootstrap.bundle.min.js"></script>
 </body>
