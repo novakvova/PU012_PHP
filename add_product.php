@@ -43,6 +43,7 @@ if($_SERVER["REQUEST_METHOD"] == 'POST')
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Головна сторінка</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/drag_and_drop.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -60,7 +61,21 @@ if($_SERVER["REQUEST_METHOD"] == 'POST')
         </div>
         <div class="mb-3">
             <label for="image" class="form-label">Фото</label>
-            <input type="file" class="form-control" id="image" name="image">
+            <input type="file" class="form-control d-none" id="image" name="image">
+            <div class="drop_container">
+                <div class="drop-targets" id="container_drop">
+<!--                    <div class="box">-->
+<!--                        <img src="images/keybord.jpg" id="item" class="item" draggable="true"/>-->
+<!--                    </div>-->
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+
+                </div>
+                <label for="image" class="form-label">Фото</label>
+            </div>
+
+
         </div>
         <div class="mb-3">
             <label for="description" class="form-label">Опис</label>
@@ -73,5 +88,29 @@ if($_SERVER["REQUEST_METHOD"] == 'POST')
 </div>
 
 <script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/drag_and_drop.js"></script>
+
+<script>
+    let image = document.getElementById("image");
+    const container_drop = document.getElementById("container_drop");
+    image.onchange = function (e) {
+        console.log("Select file");
+        let file = e.target.files[0];
+        if (file) {
+            const url = URL.createObjectURL(file);
+            const box = document.createElement('div');
+            box.className="box";
+            const img = document.createElement('img');
+            img.src=url;
+            img.className="item";
+            img.id="item";
+            img.draggable=true;
+            img.addEventListener('dragstart', dragStart);
+            box.appendChild(img);
+            container_drop.prepend(box);
+        }
+        image.value = "";
+    }
+</script>
 </body>
 </html>
