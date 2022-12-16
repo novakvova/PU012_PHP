@@ -1,34 +1,30 @@
 <?php
-if($_SERVER["REQUEST_METHOD"] == 'POST')
-{
+if ($_SERVER["REQUEST_METHOD"] == 'POST') {
     include './lib/guidv4.php';
-    $name=$_POST['name'];
-    $price=$_POST['price'];
-    $description=$_POST['description'];
+    $name = $_POST['name'];
+    $price = $_POST['price'];
+    $description = $_POST['description'];
     $dir_save = 'images/';
-    $image_name=guidv4().'.jpeg';
+    $image_name = guidv4() . '.jpeg';
     $uploadfile = $dir_save . $image_name;
     echo $uploadfile;
-    if(move_uploaded_file($_FILES['image']['tmp_name'], $uploadfile))
-    {
+    if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadfile)) {
         include 'connection_database.php';
         $sql = 'INSERT INTO tbl_products (name, image, price, date_create, description) VALUES(:name, :image, :price, NOW(), :description);';
         echo $sql;
         //exit;
         $stmt = $dbh->prepare($sql);
-        $stmt->bindParam(':name',$name);
-        $stmt->bindParam(':image',$image_name);
-        $stmt->bindParam(':price',$price);
-        $stmt->bindParam(':description',$description);
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':image', $image_name);
+        $stmt->bindParam(':price', $price);
+        $stmt->bindParam(':description', $description);
         $stmt->execute();
         header("Location: index.php");
         exit;
-    }
-    else {
+    } else {
         echo "Error upload file";
         exit();
     }
-
 
 
 }
@@ -43,8 +39,26 @@ if($_SERVER["REQUEST_METHOD"] == 'POST')
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Головна сторінка</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/drag_and_drop.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .drop_container {
+            height: 20vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 20px;
+        }
+
+        .drop-targets {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+            margin: 10px 0;
+        }
+    </style>
 </head>
 <body>
 <?php include "_header.php"; ?>
@@ -60,19 +74,54 @@ if($_SERVER["REQUEST_METHOD"] == 'POST')
             <input type="text" class="form-control" id="price" name="price">
         </div>
         <div class="mb-3">
-            <label for="image" class="form-label">Фото</label>
-            <input type="file" class="form-control d-none" id="image" name="image">
-            <div class="drop_container">
-                <div class="drop-targets" id="container_drop">
-<!--                    <div class="box">-->
-<!--                        <img src="images/keybord.jpg" id="item" class="item" draggable="true"/>-->
-<!--                    </div>-->
-                    <div class="box"></div>
-                    <div class="box"></div>
-                    <div class="box"></div>
 
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="fs-4 ms-2">
+                                    <i class="fa fa-pencil" style="cursor: pointer" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-end fs-4 text-danger me-2">
+                                    <i class="fa fa-times" style="cursor: pointer" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <img src="images/keybord.jpg" width="100%"/>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="fs-4 ms-2">
+                                    <i class="fa fa-pencil" style="cursor: pointer" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-end fs-4 text-danger me-2">
+                                    <i class="fa fa-times" style="cursor: pointer" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <img src="images/12_230_3000x600_pureSine.jpg" width="100%"/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="image" class="form-label ms-2 mt-3 text-success">
+                            <i class="fa fa-plus-square-o" style="font-size: 120px;" aria-hidden="true"></i>
+                        </label>
+                        <input type="file" class="form-control d-none" id="image" name="image">
+                    </div>
                 </div>
-                <label for="image" class="form-label">Фото</label>
+
             </div>
 
 
@@ -88,7 +137,7 @@ if($_SERVER["REQUEST_METHOD"] == 'POST')
 </div>
 
 <script src="js/bootstrap.bundle.min.js"></script>
-<script src="js/drag_and_drop.js"></script>
+
 
 <script>
     let image = document.getElementById("image");
@@ -99,12 +148,12 @@ if($_SERVER["REQUEST_METHOD"] == 'POST')
         if (file) {
             const url = URL.createObjectURL(file);
             const box = document.createElement('div');
-            box.className="box";
+            box.className = "box";
             const img = document.createElement('img');
-            img.src=url;
-            img.className="item";
-            img.id="item";
-            img.draggable=true;
+            img.src = url;
+            img.className = "item";
+            img.id = "item";
+            img.draggable = true;
             img.addEventListener('dragstart', dragStart);
             box.appendChild(img);
             container_drop.prepend(box);
