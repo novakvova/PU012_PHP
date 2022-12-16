@@ -76,49 +76,14 @@ if ($_SERVER["REQUEST_METHOD"] == 'POST') {
         <div class="mb-3">
 
             <div class="container">
-                <div class="row">
-                    <div class="col-md-2">
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="fs-4 ms-2">
-                                    <i class="fa fa-pencil" style="cursor: pointer" aria-hidden="true"></i>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="text-end fs-4 text-danger me-2">
-                                    <i class="fa fa-times" style="cursor: pointer" aria-hidden="true"></i>
-                                </div>
-                            </div>
-                        </div>
+                <div class="row" id="list_images">
 
-                        <div>
-                            <img src="images/keybord.jpg" width="100%"/>
-                        </div>
-                    </div>
 
                     <div class="col-md-2">
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="fs-4 ms-2">
-                                    <i class="fa fa-pencil" style="cursor: pointer" aria-hidden="true"></i>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="text-end fs-4 text-danger me-2">
-                                    <i class="fa fa-times" style="cursor: pointer" aria-hidden="true"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <img src="images/12_230_3000x600_pureSine.jpg" width="100%"/>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <label for="image" class="form-label ms-2 mt-3 text-success">
+                        <label for="image" style="cursor: pointer" class="form-label ms-2 mt-3 text-success">
                             <i class="fa fa-plus-square-o" style="font-size: 120px;" aria-hidden="true"></i>
                         </label>
-                        <input type="file" class="form-control d-none" id="image" name="image">
+                        <input type="file" class="form-control d-none" id="image" name="image" multiple>
                     </div>
                 </div>
 
@@ -137,29 +102,90 @@ if ($_SERVER["REQUEST_METHOD"] == 'POST') {
 </div>
 
 <script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/jquery-3.6.2.min.js"></script>
 
 
 <script>
-    let image = document.getElementById("image");
-    const container_drop = document.getElementById("container_drop");
-    image.onchange = function (e) {
-        console.log("Select file");
-        let file = e.target.files[0];
-        if (file) {
-            const url = URL.createObjectURL(file);
-            const box = document.createElement('div');
-            box.className = "box";
-            const img = document.createElement('img');
-            img.src = url;
-            img.className = "item";
-            img.id = "item";
-            img.draggable = true;
-            img.addEventListener('dragstart', dragStart);
-            box.appendChild(img);
-            container_drop.prepend(box);
-        }
-        image.value = "";
+    function uuidv4() {
+        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        );
     }
+    $(function(){
+        let image = document.getElementById("image");
+        const list_iamges = document.getElementById("list_images");
+        $("#list_images").on('click', '.remove', function (){
+            $(this).closest('.item-image').remove();
+        });
+
+        const reader = new FileReader();
+        let edit_id=0; //Зберігаю id елемента, якого редагую
+        reader.addEventListener("load", () => {
+            // convert image file to base64 string
+            const base64 = reader.result;
+            document.getElementById(`${edit_id}_image`).src=base64;
+            document.getElementById(`${edit_id}_file`).src=base64;
+        });
+
+        $("#list_images").on('change', '.edit-item', function (e){
+            edit_id=e.target.id;
+            const file=e.target.files[0];
+            reader.readAsDataURL(file);
+            this.value="";
+        });
+        image.onchange = function (e) {
+            console.log("Select file");
+            const files = e.target.files;
+            console.log(files);
+            for(let i=0; i<files.length; i++)
+            {
+                const reader = new FileReader();
+                reader.addEventListener("load", () => {
+                    // convert image file to base64 string
+                    const base64=reader.result;
+                    //conosole.log(reader.result);
+                    const id=uuidv4();
+                    const data = `
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="fs-4 ms-2">
+                                    <label for="${id}">
+                                        <i class="fa fa-pencil" style="cursor: pointer" aria-hidden="true"></i>
+                                    </label>
+                                    <input type="file" class="form-control d-none edit-item" id="${id}">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-end fs-4 text-danger me-2 remove">
+                                    <i class="fa fa-times" style="cursor: pointer" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <img src="${base64}" id="${id}_image" width="100%"/>
+                            <input type="hidden" id="${id}_file" value="${base64}" />
+                        </div>
+                    `;
+
+                    const item = document.createElement('div');
+                    item.className = "col-md-2 item-image";
+                    item.innerHTML=data;
+                    list_iamges.prepend(item);
+
+                }, false);
+
+                const file = files[i];
+                if (file) {
+                    //const url = URL.createObjectURL(file);
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            image.value = "";
+        }
+    });
+
 </script>
 </body>
 </html>
